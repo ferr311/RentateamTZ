@@ -10,11 +10,24 @@
         android:id="@+id/navigation_users"
         android:label="@string/title_users"
         android:name="com.shukhaev.rentateamtz.ui.user.UsersFragment"
-        tools:layout="@layout/fragment_users" />
+        tools:layout="@layout/fragment_users" >
+        <action
+            android:id="@+id/action_navigation_users_to_userDetailFragment"
+            app:destination="@id/userDetailFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_info"
         android:label="@string/title_info"
         android:name="com.shukhaev.rentateamtz.ui.info.InfoFragment"
         tools:layout="@layout/fragment_info" />
+    <fragment
+        android:id="@+id/userDetailFragment"
+        android:name="com.shukhaev.rentateamtz.ui.user.UserDetailFragment"
+        android:label="UserDetailFragment"
+        tools:layout="@layout/fragment_user_detail">
+        <argument
+            android:name="user"
+            app:argType="com.shukhaev.rentateamtz.data.User" />
+    </fragment>
 </navigation>

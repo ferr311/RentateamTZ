@@ -26,4 +26,6 @@ class Repository @Inject constructor(private val api: NetworkApi, private val da
             return Resource.Error("Some server error")
         }
     }
+
+    fun getUsersFromDb() = dao.getAllUsers()
 }
