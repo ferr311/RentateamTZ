@@ -3,4 +3,8 @@
     <string name="title_users">Users</string>
     <string name="title_info">Info</string>
     <string name="info_text">Тестовое задание для Rentateam</string>
+    <string name="io_error">Check internet connection</string>
+    <string name="http_error">Some server error</string>
+    <string name="unepected_error">Unexpected error</string>
+    <string name="server_error">Server response error</string>
 </resources>

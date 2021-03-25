@@ -6,7 +6,6 @@ import retrofit2.http.GET
 
 interface NetworkApi {
 
-    @GET("/users")
+    @GET("users")
     suspend fun getUsers():Response<NetworkResponse>
-
 }

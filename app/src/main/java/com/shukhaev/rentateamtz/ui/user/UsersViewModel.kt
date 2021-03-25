@@ -4,36 +4,45 @@ import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.shukhaev.rentateamtz.data.User
+import com.shukhaev.rentateamtz.network.Resource
 import com.shukhaev.rentateamtz.repository.Repository
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
-class UsersViewModel @ViewModelInject constructor(val repo: Repository) : ViewModel() {
+class UsersViewModel @ViewModelInject constructor(private val repo: Repository) : ViewModel() {
 
-    private val _stateEvents = MutableStateFlow<StateEvents>(StateEvents.Empty)
-    val stateEvents: StateFlow<StateEvents> = _stateEvents
-
-    //    private val _users = MutableLiveData<List<User>>()
-//    val users:LiveData<List<User>> = _users
-
+    private val _stateEvents = Channel<StateEvents>()
+    val stateEvents = _stateEvents.receiveAsFlow()
 
     val usersFlow = repo.getUsersFromDb()
 
     init {
-        _stateEvents.value = StateEvents.Loading
-        viewModelScope.launch { repo.getUsersFromApi() }
+        getUsers()
     }
 
-    fun itemClicked(user: User) {
-        _stateEvents.value = StateEvents.NavigateToDetail(user)
+    fun getUsers() = viewModelScope.launch {
+        _stateEvents.send(StateEvents.Loading)
+        when (val loadResult = repo.getUsersFromApi()) {
+            is Resource.Error -> {
+                _stateEvents.send(StateEvents.Error(loadResult.message.toString()))
+            }
+            is Resource.Success -> {
+                _stateEvents.send(StateEvents.Success)
+            }
+        }
+    }
+
+    fun itemClicked(user: User) = viewModelScope.launch {
+        _stateEvents.send(StateEvents.NavigateToDetail(user))
     }
 
     sealed class StateEvents {
-        object Empty : StateEvents()
         object Loading : StateEvents()
         data class Error(val message: String) : StateEvents()
-        data class Success(val message: String) : StateEvents()
+        object Success : StateEvents()
         data class NavigateToDetail(val user: User) : StateEvents()
     }
 }
